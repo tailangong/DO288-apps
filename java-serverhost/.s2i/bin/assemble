@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Before calling run.."
+mvn -e P notest -DskipTests 
+echo "After calling run.."
