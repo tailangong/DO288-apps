@@ -1,0 +1,108 @@
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: bonjour
+      app.kubernetes.io/component: bonjour
+      app.kubernetes.io/instance: bonjour
+    name: bonjour
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: bonjour:latest
+    postCommit: {}
+    resources: {}
+    source:
+      contextDir: s2i-scripts
+      git:
+        uri: https://github.com/tailangong/DO288-apps
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: httpd:2.4
+          namespace: openshift
+      type: Source
+    triggers:
+    - github:
+        secret: K-BweIEg2SUDVRBJJuc7
+      type: GitHub
+    - generic:
+        secret: RV25k1HavI_ZqHT9UCLb
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"bonjour:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"bonjour\")].image"}]'
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: bonjour
+      app.kubernetes.io/component: bonjour
+      app.kubernetes.io/instance: bonjour
+    name: bonjour
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        deployment: bonjour
+    strategy: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deployment: bonjour
+      spec:
+        containers:
+        - image: ' '
+          name: bonjour
+          ports:
+          - containerPort: 8443
+            protocol: TCP
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: bonjour
+      app.kubernetes.io/component: bonjour
+      app.kubernetes.io/instance: bonjour
+    name: bonjour
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8443-tcp
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      deployment: bonjour
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
